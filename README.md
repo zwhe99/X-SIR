@@ -4,7 +4,7 @@
 * It is adapted and mostly unchanged from [SIR](https://github.com/THU-BPM/Robust_Watermark).
 
   <p align="center">
-  <img src="assert/imgs/intro.png" alt="origin_graph"  width="500" />
+  <img src="assert/imgs/intro.png" alt="intro"  width="300" />
   </p>
 
 ### Conda Environment
