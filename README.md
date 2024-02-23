@@ -124,12 +124,10 @@ python3 generate_embeddings.py \
 
   * X-SIR
 
-    ```diff
+    ```shell
     python3 zh2en_translate.py \
-    - --input_file  gen/baichuan/multinews_sir_output.json \
-    - --output_file gen/baichuan/multinews_sir_trans.json
-    + --input_file  gen/baichuan/multinews_x-sir_output.json \
-    + --output_file gen/baichuan/multinews_x-sir_trans.json
+     --input_file  gen/baichuan/multinews_x-sir_output.json \
+     --output_file gen/baichuan/multinews_x-sir_trans.json
     ```
 
 
