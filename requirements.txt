@@ -1,0 +1,7 @@
+transformers==4.33.3
+sentence-transformers==2.3.1
+matplotlib
+accelerate
+SentencePiece
+scipy
+openai
