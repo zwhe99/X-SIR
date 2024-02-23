@@ -3,7 +3,9 @@
 * This repository contains the implementation of X-SIR in *[&#34;Can Watermarks Survive Translation? On the Cross-lingual Consistency of Text Watermark for Large Language Models&#34;](https://arxiv.org/abs/2402.14007)*.
 * It is adapted and mostly unchanged from [SIR](https://github.com/THU-BPM/Robust_Watermark).
 
-
+  <p align="center">
+  <img src="assert/imgs/intro.png" alt="origin_graph"  width="500" />
+  </p>
 
 ### Conda Environment
 
