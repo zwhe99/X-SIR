@@ -126,8 +126,8 @@ python3 generate_embeddings.py \
 
     ```shell
     python3 zh2en_translate.py \
-     --input_file  gen/baichuan/multinews_x-sir_output.json \
-     --output_file gen/baichuan/multinews_x-sir_trans.json
+      --input_file  gen/baichuan/multinews_x-sir_output.json \
+      --output_file gen/baichuan/multinews_x-sir_trans.json
     ```
 
 
