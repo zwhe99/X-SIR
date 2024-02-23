@@ -51,7 +51,7 @@ python3 generate_embeddings.py \
   It should be like:
 
   <p align="center">
-  <img src="origin_graph.png" alt="origin_graph"  width="500" />
+  <img src="assert/imgs/origin_graph.png" alt="origin_graph"  width="500" />
   </p>
 
 
