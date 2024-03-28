@@ -1,6 +1,5 @@
 # Can Watermarks Survive Translation? On the Cross-lingual Consistency of Text Watermark for Large Language Models
 
-* Adapted and mostly unchanged from [SIR](https://github.com/THU-BPM/Robust_Watermark).
 
   <p align="center">
   <img src="assert/imgs/intro.png" alt="intro"  width="300" />
