@@ -1,7 +1,6 @@
 # Can Watermarks Survive Translation? On the Cross-lingual Consistency of Text Watermark for Large Language Models
 
-* This repository contains the implementation of X-SIR in *[&#34;Can Watermarks Survive Translation? On the Cross-lingual Consistency of Text Watermark for Large Language Models&#34;](https://arxiv.org/abs/2402.14007)*.
-* It is adapted and mostly unchanged from [SIR](https://github.com/THU-BPM/Robust_Watermark).
+* Adapted and mostly unchanged from [SIR](https://github.com/THU-BPM/Robust_Watermark).
 
   <p align="center">
   <img src="assert/imgs/intro.png" alt="intro"  width="300" />
@@ -244,17 +243,3 @@ python3 generate_embeddings.py \
   	--wm_zscore gen/baichuan/multinews_x-sir_trans_zscore.json
   # AUC: 0.80324
   ```
-
-
-
-
-## Citation
-
-```ruby
-@article{he2024can,
-  title={Can Watermarks Survive Translation? On the Cross-lingual Consistency of Text Watermark for Large Language Models},
-  author={He, Zhiwei and Zhou, Binglin and Hao, Hongkun and Liu, Aiwei and Wang, Xing and Tu, Zhaopeng and Zhang, Zhuosheng and Wang, Rui},
-  journal={arXiv preprint arXiv:2402.14007},
-  year={2024}
-}
-```
