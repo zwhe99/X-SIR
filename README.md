@@ -209,9 +209,9 @@ WATERMARK_METHOD_FLAG="--watermark_method kgw"
 MODEL_NAME=baichuan-inc/Baichuan-7B
 MODEL_ABBR=baichuan-7b
 TRANSFORM_MODEL=data/model/transform_model_x-sbert_10K.pth
-MAPPING_FILE=data/mapping/xsir/300_mapping_$MODEL_ABBR.json
+MAPPING_FILE=data/mapping/sir/300_mapping_$MODEL_ABBR.json
 
-WATERMARK_METHOD_FLAG="--watermark_method sir  --transform_model $TRANSFORM_MODEL --embedding_model $EMBEDDING_MODEL --mapping_file $MAPPING_DIR/sir/300_mapping_$MODEL_ABBR.json"
+WATERMARK_METHOD_FLAG="--watermark_method sir  --transform_model $TRANSFORM_MODEL --embedding_model paraphrase-multilingual-mpnet-base-v2 --mapping_file $MAPPING_FILE"
 ```
 
 
