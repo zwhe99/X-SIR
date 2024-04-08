@@ -194,8 +194,9 @@ F1@FPR=0.01: 0.200
 ## Acknoledgement
 
 This work can not be done without the help of the following repos:
-SIR: [https://github.com/THU-BPM/Robust_Watermark](https://github.com/THU-BPM/Robust_Watermark)
-KGW: [https://github.com/jwkirchenbauer/lm-watermarking](https://github.com/jwkirchenbauer/lm-watermarking)
+
+- SIR: [https://github.com/THU-BPM/Robust_Watermark](https://github.com/THU-BPM/Robust_Watermark)
+- KGW: [https://github.com/jwkirchenbauer/lm-watermarking](https://github.com/jwkirchenbauer/lm-watermarking)
 
 ## Citation
 
