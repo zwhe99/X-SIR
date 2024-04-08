@@ -191,14 +191,38 @@ F1@FPR=0.1: 0.775
 F1@FPR=0.01: 0.200
 ```
 
-## Acknowledgement
+
+
+### Usage (With attack)
+
+You can use the following flags to specify the watermarking method:
+
+**KGW**
+
+```shell
+WATERMARK_METHOD_FLAG="--watermark_method kgw"
+```
+
+**SIR**
+
+```SHELL
+MODEL_NAME=baichuan-inc/Baichuan-7B
+MODEL_ABBR=baichuan-7b
+TRANSFORM_MODEL=data/model/transform_model_x-sbert_10K.pth
+MAPPING_FILE=data/mapping/xsir/300_mapping_$MODEL_ABBR.json
+
+WATERMARK_METHOD_FLAG="--watermark_method sir  --transform_model $TRANSFORM_MODEL --embedding_model $EMBEDDING_MODEL --mapping_file $MAPPING_DIR/sir/300_mapping_$MODEL_ABBR.json"
+```
+
+
+### Acknowledgement
 
 This work can not be done without the help of the following repos:
 
 - SIR: [https://github.com/THU-BPM/Robust_Watermark](https://github.com/THU-BPM/Robust_Watermark)
 - KGW: [https://github.com/jwkirchenbauer/lm-watermarking](https://github.com/jwkirchenbauer/lm-watermarking)
 
-## Citation
+### Citation
 
 ```ruby
 @article{he2024can,

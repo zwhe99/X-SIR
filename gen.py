@@ -80,7 +80,7 @@ def main(args):
         model = torch.compile(model)
 
     # Load watermark
-    if args.watermark_method == "xsir":
+    if args.watermark_method in ["xsir", "sir"]:
         if args.watermark_type == "window": # use a window of previous tokens to hash, e.g. KGW
             watermark_model = XSIRWindow(
                 device,
@@ -163,7 +163,7 @@ if __name__ == "__main__":
     parser.add_argument('--output_file', type=str, required=True)
 
     # Watermark
-    parser.add_argument('--watermark_method', type=str, choices=["xsir", "kgw", "no"], default="no")
+    parser.add_argument('--watermark_method', type=str, choices=["xsir", "sir", "kgw", "no"], default="no")
     parser.add_argument('--delta', type=float, default=None)
 
     # X-SIR
@@ -185,7 +185,7 @@ if __name__ == "__main__":
     # Manually set default value for delta based on watermark_method
     if args.watermark_method == "kgw" and args.delta is None:
         args.delta = 2
-    elif args.watermark_method in ["xsir"] and args.delta is None:
+    elif args.watermark_method in ["xsir", "sir"] and args.delta is None:
         args.delta = 1
 
     main(args)
