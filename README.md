@@ -191,7 +191,7 @@ F1@FPR=0.1: 0.775
 F1@FPR=0.01: 0.200
 ```
 
-## Acknoledgement
+## Acknowledgement
 
 This work can not be done without the help of the following repos:
 
