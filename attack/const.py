@@ -1,0 +1,41 @@
+# Constants: max requests and tokens per minute
+# Should be set according to usage tier
+MODEL2RPM = {
+    "gpt-3.5-turbo":                10000,
+    "gpt-3.5-turbo-0125":           10000,
+    "gpt-3.5-turbo-0301":           10000,
+    "gpt-3.5-turbo-0613":           10000,
+    "gpt-3.5-turbo-1106":           10000,
+    "gpt-3.5-turbo-16k":            10000,
+    "gpt-3.5-turbo-16k-0613":       10000,
+    "gpt-3.5-turbo-instruct":        3000,
+    "gpt-3.5-turbo-instruct-0914":   3000,
+    "gpt-4":                        10000,
+    "gpt-4-0314":                   10000,
+    "gpt-4-0613":                   10000,
+    "gpt-4-32k-0314":                1000,
+    "gpt-4-turbo-preview":          10000,
+    "gpt-4-0125-preview":           10000,
+    "gpt-4-1106-preview":           10000,
+    "gpt-4-vision-preview":          3000,
+}
+
+MODEL2TPM = {
+    "gpt-3.5-turbo":              2000000,
+    "gpt-3.5-turbo-0125":         2000000,
+    "gpt-3.5-turbo-0301":         2000000,
+    "gpt-3.5-turbo-0613":         2000000,
+    "gpt-3.5-turbo-1106":         2000000,
+    "gpt-3.5-turbo-16k":          2000000,
+    "gpt-3.5-turbo-16k-0613":     2000000,
+    "gpt-3.5-turbo-instruct":      250000,
+    "gpt-3.5-turbo-instruct-0914": 250000,
+    "gpt-4":                       300000,
+    "gpt-4-0314":                  300000,
+    "gpt-4-0613":                  300000,
+    "gpt-4-32k-0314":              150000,
+    "gpt-4-turbo-preview":        1500000,
+    "gpt-4-0125-preview":         1500000,
+    "gpt-4-1106-preview":         1500000,
+    "gpt-4-vision-preview":        300000,
+}

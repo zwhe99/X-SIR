@@ -1,11 +1,29 @@
-# Can Watermarks Survive Translation? On the Cross-lingual Consistency of Text Watermark for Large Language Models
+<div align="center">
+  <img src="assert/logo.png" alt="Logo" width="200">
+</div>
+
+<div align="center">
+  <h2 align="center">💧 X-SIR: A text watermark that survives translation</h2>
+  <a href="https://arxiv.org/abs/2402.14007" style="display: inline-block; text-align: center;">
+      <img alt="arXiv" src="https://img.shields.io/badge/arXiv-2402.14007-b31b1b.svg?style=flat">
+  </a>
+  <a href="https://img.shields.io/badge/python-3.10-blue.svg" style="display: inline-block; text-align: center;">
+      <img alt="Python 3.10" src="https://img.shields.io/badge/python-3.10-blue.svg">
+  </a>
+</div>
 
 
-  <p align="center">
-  <img src="assert/imgs/intro.png" alt="intro"  width="300" />
-  </p>
+**Implementaion of our [paper](https://arxiv.org/abs/2402.14007):**
 
-### Conda Environment
+```
+Can Watermarks Survive Translation? On the Cross-lingual Consistency of Text Watermark for Large Language Models
+```
+
+🔥 **News**
+
+* **[Apr 8, 2024]**: New repo released!
+
+**Conda environment**
 
 Tested on the following environment, but it should work on other versions.
 
@@ -13,232 +31,179 @@ Tested on the following environment, but it should work on other versions.
 - pytorch
 - `pip3 install -r requirements.txt`
 
+**Overview**
+
+* `src_watermark` implements three text watermarking methods (`x-sir`, `sir` and `kgw`) with a unified interface.
+* `attack` contains two watermarking removal methods: *paraphrase* and *translation*
+* Scripts:
+  * `gen.py`: generate text with watermark
+  * `detect.py`: compute z-score for given texts
+  * `eval_detection.py`: calculate AUC, TPR, and F1 for watermark detection
+  * You can use `--help` to see full usage of these scripts.
+* Supported models:
+  * `meta-llama/Llama-2-7b-hf`
+  * `baichuan-inc/Baichuan2-7B-Base`
+  * `baichuan-inc/Baichuan-7B`
+  * `mistralai/Mistral-7B-v0.1`
+* Supported languages: English (En), German (De), French (Fr), Chinese (Zh), Japanese (Ja)
+* You can learn how to extend the model and language in [from-scratch.md](from-scratch.md).
 
 
-### Step1: Generate embeddings for training watermark model
+
+### Usage (No attack)
+
+**Generate text with watermark**
 
 ```shell
-python3 generate_embeddings.py \
-	--input_path data/sts/train.jsonl \
-	--output_path data/embeddings/train_embeddings.txt \
-	--model_path paraphrase-multilingual-mpnet-base-v2 \
-	--size 2000
+MODEL_NAME=baichuan-inc/Baichuan-7B
+MODEL_ABBR=baichuan-7b
+TRANSFORM_MODEL=data/model/transform_model_x-sbert_10K.pth
+MAPPING_FILE=data/mapping/xsir/300_mapping_$MODEL_ABBR.json
+
+WATERMARK_METHOD_FLAG="--watermark_method xsir  --transform_model $TRANSFORM_MODEL --embedding_model paraphrase-multilingual-mpnet-base-v2 --mapping_file $MAPPING_FILE"
+
+python3 gen.py \
+    --base_model $MODEL_NAME \
+    --fp16 \
+    --batch_size 32 \
+    --input_file data/dataset/mc4/mc4.en.jsonl \
+    --output_file gen/$MODEL_ABBR/xsir/mc4.en.mod.jsonl \
+    --WATERMARK_METHOD_FLAG
+```
+
+**Compute the z-scores**
+
+```shell
+# Compute z-score for human-written text
+python3 detect.py \
+    --base_model $MODEL_NAME \
+    --detect_file data/dataset/mc4/mc4.en.jsonl \
+    --output_file gen/$MODEL_ABBR/xsir/mc4.en.hum.z_score.jsonl \
+    $WATERMARK_METHOD_FLAG
+
+# Compute z-score for watermarked text
+python3 detect.py \
+    --base_model $MODEL_NAME \
+    --detect_file gen/$MODEL_ABBR/xsir/mc4.en.mod.jsonl \
+    --output_file gen/$MODEL_ABBR/xsir/mc4.en.mod.z_score.jsonl \
+    $WATERMARK_METHOD_FLAG
+```
+
+**Evaluation**
+
+```shell
+python3 eval_detection.py \
+	--hm_zscore gen/$MODEL_ABBR/xsir/mc4.en.hum.z_score.jsonl \
+	--wm_zscore gen/$MODEL_ABBR/xsir/mc4.en.mod.z_score.jsonl
+
+AUC: 0.994
+
+TPR@FPR=0.1: 0.994
+TPR@FPR=0.01: 0.862
+
+F1@FPR=0.1: 0.955
+F1@FPR=0.01: 0.921
 ```
 
 
 
-### Step2: Train watermark model
+### Usage (With attack)
 
-* Train the watermark model using the embeddings generated in Step1
+Here we test the watermark after translating to other languages (De, Fr, Zh, Ja).
 
-  ```shell
-  python3 train_watermark_model.py \
-  	--input_path data/embeddings/train_embeddings.txt \
-  	--output_model model/transform_model_x-sbert.pth \
-  	--input_dim 768
-  ```
+##### Preparation
 
-* [Optional] You could check the quality of the trained model by running the following command to visualize the similarity:
+We use ChatGPT to perform paraphrase and translation. Therefore:
 
-  ```shell
-  python3 analysis_transform_model.py \
-  	--embedding_file data/embeddings/train_embeddings.txt \
-  	--input_dim 768 \
-  	--checkpoint model/transform_model_x-sbert.pth \
-  	--figure_dir data/figures/
-  ```
+* Set you openai api key: `export OPENAI_API_KEY=xxxx`
+* You may also want to modify the RPMs and TPMs in `attach/const.py`
 
-  It should be like:
+**Translation**
 
-  <p align="center">
-  <img src="assert/imgs/origin_graph.png" alt="origin_graph"  width="500" />
-  </p>
+```shell
+TGT_LANGS=("de" "fr" "zh" "ja")
+for TGT_LANG in "${TGT_LANGS[@]}"; do
+    python3 attack/translate.py \
+        --input_file gen/$MODEL_ABBR/xsir/mc4.en.mod.jsonl \
+        --output_file gen/$MODEL_ABBR/xsir/mc4.en-$TGT_LANG.mod.jsonl \
+        --model gpt-3.5-turbo-1106 \
+        --src_lang en \
+        --tgt_lang $TGT_LANG
+done
+```
 
+**Compute the z-scores**
 
+```shell
+for TGT_LANG in "${TGT_LANGS[@]}"; do
+    python3 detect.py \
+        --base_model $MODEL_NAME \
+        --detect_file gen/$MODEL_ABBR/xsir/mc4.en-$TGT_LANG.mod.jsonl \
+        --output_file gen/$MODEL_ABBR/xsir/mc4.en-$TGT_LANG.mod.z_score.jsonl \
+        $WATERMARK_METHOD_FLAG
+done
+```
 
-### Step3: Generate watermarked & translated text 
+**Evaluation**
 
-- Generate mapping files
+```shell
+for TGT_LANG in "${TGT_LANGS[@]}"; do
+    echo "En->$TGT_LANG"
+    python3 eval_detection.py \
+        --hm_zscore gen/$MODEL_ABBR/xsir/mc4.en.hum.z_score.jsonl \
+        --wm_zscore gen/$MODEL_ABBR/xsir/mc4.en-$TGT_LANG.mod.z_score.jsonl
+done
 
-  - SIR
+En->de
+AUC: 0.769
 
-    ```shell
-    python3 generate_mappings.py \
-      --model baichuan-inc/Baichuan-7B \
-      --output_file data/mappings/300_mapping_baichuan.json
-    ```
+TPR@FPR=0.1: 0.318
+TPR@FPR=0.01: 0.060
 
-  - X-SIR
+F1@FPR=0.1: 0.450
+F1@FPR=0.01: 0.112
 
-    ```diff
-    python3 generate_semantic_mappings.py \
-      --model baichuan-inc/Baichuan-7B \
-    + --dictionary data/mappings/en-zh_dict.txt \
-    - --output_file data/mappings/300_mapping_baichuan.json
-    + --output_file data/mappings/300_mapping_baichuan_enzh.json
-    ```
-    
-    *You can check the semantic clustering of tokens in `data/mappings/300_mapping_baichuan_enzh_cluster.json`.*
-    
-    
+En->fr
+AUC: 0.810
 
-- Generate watermarked text (use `text summarization` as an example: )
+TPR@FPR=0.1: 0.354
+TPR@FPR=0.01: 0.046
 
-  - SIR
+F1@FPR=0.1: 0.488
+F1@FPR=0.01: 0.087
 
-    ```shell
-    python3 inference_with_watermark.py \
-      --base_model baichuan-inc/Baichuan-7B \
-      --prmopt_file data/dataset/multinews_cwra_prompt.json \
-      --output_file gen/baichuan/multinews_sir_output.json \
-      --mapping_file data/mappings/300_mapping_baichuan.json \
-      --transform_model model/transform_model_x-sbert.pth \
-      --embedding_model paraphrase-multilingual-mpnet-base-v2
-    ```
+En->zh
+AUC: 0.905
 
-  * X-SIR
+TPR@FPR=0.1: 0.702
+TPR@FPR=0.01: 0.182
 
-    ```diff
-    python3 inference_with_watermark.py \
-      --base_model baichuan-inc/Baichuan-7B \
-      --prmopt_file data/dataset/multinews_cwra_prompt.json \
-    - --output_file gen/baichuan/multinews_sir_output.json \
-    - --mapping_file data/mappings/300_mapping_baichuan.json \
-    + --output_file gen/baichuan/multinews_x-sir_output.json \
-    + --mapping_file data/mappings/300_mapping_baichuan_enzh.json \
-      --transform_model model/transform_model_x-sbert.pth \
-      --embedding_model paraphrase-multilingual-mpnet-base-v2
-    ```
+F1@FPR=0.1: 0.781
+F1@FPR=0.01: 0.305
 
+En->ja
+AUC: 0.911
 
+TPR@FPR=0.1: 0.696
+TPR@FPR=0.01: 0.112
 
-* Translate the watermarked text into English
+F1@FPR=0.1: 0.775
+F1@FPR=0.01: 0.200
+```
 
-  * SIR
+## Acknoledgement
 
-    ```shell
-    python3 zh2en_translate.py \
-    	--input_file  gen/baichuan/multinews_sir_output.json \
-    	--output_file gen/baichuan/multinews_sir_trans.json
-    ```
+This work can not be done without the help of the following repos:
+SIR: [https://github.com/THU-BPM/Robust_Watermark](https://github.com/THU-BPM/Robust_Watermark)
+KGW: [https://github.com/jwkirchenbauer/lm-watermarking](https://github.com/jwkirchenbauer/lm-watermarking)
 
-  * X-SIR
+## Citation
 
-    ```shell
-    python3 zh2en_translate.py \
-    	--input_file  gen/baichuan/multinews_x-sir_output.json \
-    	--output_file gen/baichuan/multinews_x-sir_trans.json
-    ```
-
-
-
-
-### Step4: Compute watermark strength (z-score)
-
-* SIR
-
-  ```shell
-  # reference
-  python3 detect.py \
-  	--base_model baichuan-inc/Baichuan-7B \
-    --detect_file data/dataset/multinews_ref.json \
-    --output_path gen/baichuan/multinews_sir_ref_zscore.json \
-    --mapping_file data/mappings/300_mapping_baichuan.json \
-    --transform_model model/transform_model_x-sbert.pth \
-    --embedding_model paraphrase-multilingual-mpnet-base-v2
-  
-  # output
-  python3 detect.py \
-    --base_model baichuan-inc/Baichuan-7B \
-    --detect_file gen/baichuan/multinews_sir_output.json \
-    --output_path gen/baichuan/multinews_sir_output_zscore.json \
-    --mapping_file data/mappings/300_mapping_baichuan.json \
-    --transform_model model/transform_model_x-sbert.pth \
-    --embedding_model paraphrase-multilingual-mpnet-base-v2
-  
-  # translated output
-  python3 detect.py \
-    --base_model baichuan-inc/Baichuan-7B \
-    --detect_file gen/baichuan/multinews_sir_trans.json \
-    --output_path gen/baichuan/multinews_sir_trans_zscore.json \
-    --mapping_file data/mappings/300_mapping_baichuan.json \
-    --transform_model model/transform_model_x-sbert.pth \
-    --embedding_model paraphrase-multilingual-mpnet-base-v2
-  ```
-
-* X-SIR
-
-  ```diff
-  # reference
-  python3 detect.py \
-    --base_model baichuan-inc/Baichuan-7B \
-    --detect_file data/dataset/multinews_ref.json \
-  - --output_path gen/baichuan/multinews_sir_ref_zscore.json \
-  - --mapping_file data/mappings/300_mapping_baichuan.json \
-  + --output_path gen/baichuan/multinews_x-sir_ref_zscore.json \
-  + --mapping_file data/mappings/300_mapping_baichuan_enzh.json \
-    --transform_model model/transform_model_x-sbert.pth \
-    --embedding_model paraphrase-multilingual-mpnet-base-v2
-  
-  # output
-  python3 detect.py \
-    --base_model baichuan-inc/Baichuan-7B \
-  - --detect_file gen/baichuan/multinews_sir_output.json \
-  - --output_path gen/baichuan/multinews_sir_output_zscore.json \
-  - --mapping_file data/mappings/300_mapping_baichuan.json \
-  + --detect_file gen/baichuan/multinews_x-sir_output.json \
-  + --output_path gen/baichuan/multinews_x-sir_output_zscore.json \
-  + --mapping_file data/mappings/300_mapping_baichuan_enzh.json \
-    --transform_model model/transform_model_x-sbert.pth \
-    --embedding_model paraphrase-multilingual-mpnet-base-v2
-  
-  # translated output
-  python3 detect.py \
-    --base_model baichuan-inc/Baichuan-7B \
-  - --detect_file gen/baichuan/multinews_sir_trans.json \
-  - --output_path gen/baichuan/multinews_sir_trans_zscore.json \
-  - --mapping_file data/mappings/300_mapping_baichuan.json \
-  + --detect_file gen/baichuan/multinews_x-sir_trans.json \
-  + --output_path gen/baichuan/multinews_x-sir_trans_zscore.json \
-  + --mapping_file data/mappings/300_mapping_baichuan_enzh.json \
-    --transform_model model/transform_model_x-sbert.pth \
-    --embedding_model paraphrase-multilingual-mpnet-base-v2
-  ```
-
-
-
-### Step5: Compute AUC
-
-* SIR
-
-  ```shell
-  # No attack
-  python3 auc.py \
-  	--ref_zscore gen/baichuan/multinews_sir_ref_zscore.json \
-  	--wm_zscore gen/baichuan/multinews_sir_output_zscore.json
-  # AUC: 0.9327999999999999
-  
-  # CWRA
-  python3 auc.py \
-  	--ref_zscore gen/baichuan/multinews_sir_ref_zscore.json \
-  	--wm_zscore gen/baichuan/multinews_sir_trans_zscore.json
-  # AUC: 0.64686
-  ```
-
-  
-
-* X-SIR
-
-  ```shell
-  # No attack
-  python3 auc.py \
-  	--ref_zscore gen/baichuan/multinews_x-sir_ref_zscore.json \
-  	--wm_zscore gen/baichuan/multinews_x-sir_output_zscore.json
-  # AUC: 0.9388799999999999
-  
-  # CWRA
-  python3 auc.py \
-  	--ref_zscore gen/baichuan/multinews_x-sir_ref_zscore.json \
-  	--wm_zscore gen/baichuan/multinews_x-sir_trans_zscore.json
-  # AUC: 0.80324
-  ```
+```ruby
+@article{he2024can,
+  title={Can Watermarks Survive Translation? On the Cross-lingual Consistency of Text Watermark for Large Language Models},
+  author={He, Zhiwei and Zhou, Binglin and Hao, Hongkun and Liu, Aiwei and Wang, Xing and Tu, Zhaopeng and Zhang, Zhuosheng and Wang, Rui},
+  journal={arXiv preprint arXiv:2402.14007},
+  year={2024}
+}
+```
