@@ -88,8 +88,8 @@ python3 data/dictionary/build_dictionary.sh \
 ```shell
 MODEL_NAME=baichuan-inc/Baichuan-7B
 MODEL_ABBR=baichuan-7b
-python3 $WORK_DIR/src_watermark/xsir/generate_semantic_mappings.py \
+python3 src_watermark/xsir/generate_semantic_mappings.py \
     --model $MODEL_NAME \
-    --dictionary $DATA_DIR/dictionary/dictionary.txt \
-    --output_file $DATA_DIR/mapping/xsir/300_mapping_$MODEL_ABBR.json
+    --dictionary data/dictionary/dictionary.txt \
+    --output_file data/mapping/xsir/300_mapping_$MODEL_ABBR.json
 ```
