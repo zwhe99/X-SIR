@@ -116,7 +116,7 @@ Here we test the watermark after translating to other languages (De, Fr, Zh, Ja)
 We use ChatGPT to perform paraphrase and translation. Therefore:
 
 * Set you openai api key: `export OPENAI_API_KEY=xxxx`
-* You may also want to modify the RPMs and TPMs in `attach/const.py`
+* You may also want to modify the RPMs and TPMs in `attack/const.py`
 
 **Translation**
 
