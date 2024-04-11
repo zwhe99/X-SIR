@@ -13,3 +13,4 @@ langcodes
 language_data
 protobuf
 pyvis
+accelerate
