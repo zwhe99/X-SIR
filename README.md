@@ -30,6 +30,7 @@ Tested on the following environment, but it should work on other versions.
 - python 3.10.10
 - pytorch
 - `pip3 install -r requirements.txt`
+- [optional] pip3 install flash-attn==2.3.3
 
 **Overview**
 
