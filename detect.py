@@ -85,15 +85,15 @@ def main(args):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Compare the z-scores of strings in detect_file.')
     # Model
-    parser.add_argument('--base_model', type=str, required=True)
+    parser.add_argument('--base_model', type=str, required=True, help="Base model path. Only tokenizer is used.")
 
     # Data
-    parser.add_argument('--detect_file', type=str, required=True)
-    parser.add_argument('--output_file', type=str, required=True)
+    parser.add_argument('--detect_file', type=str, required=True, help="File to detect the z-scores.")
+    parser.add_argument('--output_file', type=str, required=True, help="Output file to write the z-scores.")
 
     # Watermark
-    parser.add_argument('--watermark_method', type=str, choices=["xsir", "kgw", "sir"], required=True)
-    parser.add_argument('--delta', type=float, default=None)
+    parser.add_argument('--watermark_method', type=str, choices=["xsir", "kgw", "sir"], required=True, help="Watermarking method")
+    parser.add_argument('--delta', type=float, default=None, help="bias of logit")
 
     # X-SIR
     parser.add_argument('--watermark_type', type=str, default="context")

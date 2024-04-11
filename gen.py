@@ -154,17 +154,17 @@ def main(args):
 if __name__ == "__main__": 
     parser = argparse.ArgumentParser(description='Generate with watermarking')
     # Model
-    parser.add_argument('--base_model', type=str, required=True)
-    parser.add_argument('--fp16', action="store_true")
-    parser.add_argument('--bf16', action="store_true")
+    parser.add_argument('--base_model', type=str, required=True, help="Base model to generate text from")
+    parser.add_argument('--fp16', action="store_true", help="Use fp16")
+    parser.add_argument('--bf16', action="store_true", help="Use bf16")
 
     # Data
-    parser.add_argument('--input_file', type=str, required=True)
-    parser.add_argument('--output_file', type=str, required=True)
+    parser.add_argument('--input_file', type=str, required=True, help="Input file containing prompts")
+    parser.add_argument('--output_file', type=str, required=True, help="Output file to save generated text")
 
     # Watermark
-    parser.add_argument('--watermark_method', type=str, choices=["xsir", "sir", "kgw", "no"], default="no")
-    parser.add_argument('--delta', type=float, default=None)
+    parser.add_argument('--watermark_method', type=str, choices=["xsir", "sir", "kgw", "no"], default="no", help="Watermarking method")
+    parser.add_argument('--delta', type=float, default=None, help="bias of logit")
 
     # X-SIR
     parser.add_argument('--watermark_type', type=str, default="context")
