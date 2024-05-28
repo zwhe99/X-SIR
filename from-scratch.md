@@ -64,7 +64,7 @@ wget -P data/dictionary/download https://dl.fbaipublicfiles.com/arrival/dictiona
 wget -P data/dictionary/download https://dl.fbaipublicfiles.com/arrival/dictionaries/en-ja.txt
 ```
 
-##### Build a unidentified dictionary
+##### Build a unified dictionary
 
 ```shell
 python3 data/dictionary/build_dictionary.sh \
