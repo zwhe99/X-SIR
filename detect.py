@@ -3,7 +3,7 @@ import tqdm
 import torch
 import argparse
 
-from transformers import AutoTokenizer
+from transformers import AutoTokenizer, AutoModelForCausalLM
 from src_watermark.xsir.watermark import (
     WatermarkWindow as XSIRWindow,
     WatermarkContext as XSIRContext,
@@ -11,6 +11,8 @@ from src_watermark.xsir.watermark import (
 from src_watermark.kgw.extended_watermark_processor import (
     WatermarkDetector as KGWDetector
 )
+from src_watermark.uw.detect import Detector as UWDetector
+
 from utils import read_jsonl, append_jsonl
 
 def get_length(text, tokenizer):
@@ -54,6 +56,12 @@ def main(args):
             normalizers=[],
             ignore_repeated_ngrams=True,
         )
+    elif args.watermark_method == "uw":
+        model = AutoModelForCausalLM.from_pretrained(args.base_model, device_map="auto", trust_remote_code=True)
+        watermark_detector = UWDetector(
+            model=model,
+            tokenizer=tokenizer
+        )
     else:
         raise ValueError(f"Incorrect watermark method: {args.watermark_method}")
 
@@ -92,7 +100,7 @@ if __name__ == "__main__":
     parser.add_argument('--output_file', type=str, required=True, help="Output file to write the z-scores.")
 
     # Watermark
-    parser.add_argument('--watermark_method', type=str, choices=["xsir", "kgw", "sir"], required=True, help="Watermarking method")
+    parser.add_argument('--watermark_method', type=str, choices=["xsir", "kgw", "sir", "uw"], required=True, help="Watermarking method")
     parser.add_argument('--delta', type=float, default=None, help="bias of logit")
 
     # X-SIR

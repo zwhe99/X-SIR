@@ -18,6 +18,13 @@ from src_watermark.xsir.watermark import (
 from src_watermark.kgw.extended_watermark_processor import (
     WatermarkLogitsProcessor as KGWLogitsProcessor
 )
+from src_watermark.uw import (
+    Delta_Reweight,
+    Gamma_Reweight,
+    WatermarkLogitsProcessor as UWLogitsProcessor,
+    PrevN_ContextCodeExtractor,
+    patch_model
+)
 
 from utils import read_jsonl, append_jsonl
 
@@ -108,6 +115,12 @@ def main(args):
             delta=args.delta,
             seeding_scheme=args.seeding_scheme
         )
+    elif args.watermark_method == "uw":
+        logits_processor = UWLogitsProcessor(
+            b"42",
+            Delta_Reweight(),
+            PrevN_ContextCodeExtractor(5),
+        )
     elif args.watermark_method == "no":
         logits_processor = None
     else:
@@ -163,7 +176,7 @@ if __name__ == "__main__":
     parser.add_argument('--output_file', type=str, required=True, help="Output file to save generated text")
 
     # Watermark
-    parser.add_argument('--watermark_method', type=str, choices=["xsir", "sir", "kgw", "no"], default="no", help="Watermarking method")
+    parser.add_argument('--watermark_method', type=str, choices=["xsir", "sir", "kgw", "uw", "no"], default="no", help="Watermarking method")
     parser.add_argument('--delta', type=float, default=None, help="bias of logit")
 
     # X-SIR
